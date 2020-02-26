@@ -28,6 +28,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<MyItem> {
             for (int i = 0; i< 100 ; i++) {
                 if (item.getSnippet().contains("Availability: " + i + "%")) {
                     markerDescriptor = BitmapDescriptorFactory.defaultMarker(i);
+                    break;
                 }
             }
         }

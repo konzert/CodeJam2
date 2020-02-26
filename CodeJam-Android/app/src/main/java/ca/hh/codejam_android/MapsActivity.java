@@ -112,7 +112,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             // Show rationale and request permission.
         }
 
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
 
@@ -129,8 +129,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         // mMap.addMarker(new MarkerOptions().position(montreal).title("Marker in Montreal"));
 
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
-
-
 
         this.setUpClusterer();
         // Update position
@@ -209,11 +207,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         mClusterManager = new ClusterManager<MyItem>(this, mMap);
 
         // Add cluster items (markers) to the cluster manager.
-        addItems();
 
         final CustomClusterRenderer renderer = new CustomClusterRenderer(this, mMap, mClusterManager);
 
         mClusterManager.setRenderer(renderer);
+
+        addItems();
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
