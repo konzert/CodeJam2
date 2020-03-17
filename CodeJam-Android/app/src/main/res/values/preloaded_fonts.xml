@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/armata</item>
+        <item>@font/capriola</item>
+        <item>@font/dosis_extrabold</item>
+        <item>@font/eb_garamond</item>
+        <item>@font/ubuntu_medium</item>
+        <item>@font/vollkorn_bold</item>
+    </array>
+</resources>
