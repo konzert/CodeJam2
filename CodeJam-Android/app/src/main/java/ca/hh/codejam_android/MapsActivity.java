@@ -47,7 +47,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
 
 
-    List<SiteInfo> siteInfoList =  new  ArrayList<>();
+    //List<SiteInfo> siteInfoList =  new  ArrayList<>();
 
     double latitude;
     double longitude;
@@ -196,7 +196,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
 
     // Declare a variable for the cluster manager.
-    private ClusterManager<MyItem> mClusterManager;
+    //private ClusterManager<MyItem> mClusterManager;
 
     private void setUpClusterer() {
         // Position the map.
@@ -204,34 +204,35 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+        ClusterManager<MyItem> mClusterManager = new ClusterManager<MyItem>(this, mMap);
 
         // Add cluster items (markers) to the cluster manager.
+        addItems(mClusterManager);
 
         final CustomClusterRenderer renderer = new CustomClusterRenderer(this, mMap, mClusterManager);
 
         mClusterManager.setRenderer(renderer);
-
-        addItems();
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
 
-
     }
 
-    private void addItems() {
+    private void addItems(ClusterManager<MyItem> thisClusterManager) {
 
         InputStream is = getResources().openRawResource(R.raw.data);
         BufferedReader reader = new BufferedReader(new InputStreamReader(is,  Charset.forName("UTF-8")));
 
         String info = "";
+        List<SiteInfo> siteInfoList =  new  ArrayList<>();
+
+        // Put in place just for testing
 
         while (true) {
             try {
-                if (!((info = reader.readLine()) != null)) break;
+                if ((info = reader.readLine()) == null) break;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -244,12 +245,11 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             prob = String.valueOf(line[6]);
 
             siteInfoList.add(new SiteInfo(number, tarrif, latitude, longitude, hours, prob));
-
         }
 
         for (SiteInfo p : siteInfoList) {
             MyItem parkingSpot = new MyItem(p.latitude, p.longitude, p.number, p.tarrif + p.hours+"\nProbability of Availability: " + p.prob + "%");
-            mClusterManager.addItem(parkingSpot);
+            thisClusterManager.addItem(parkingSpot);
         }
     }
 
@@ -491,7 +491,6 @@ class SiteInfo {
                 else return prob = "Unavailable";
             }
             else return prob = "Unavailable";
-
         }
 
     }
