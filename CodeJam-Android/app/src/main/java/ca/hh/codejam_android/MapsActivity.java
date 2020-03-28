@@ -1,9 +1,5 @@
 package ca.hh.codejam_android;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -12,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -19,35 +16,34 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.algo.NonHierarchicalViewBasedAlgorithm;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Random;
 
 
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
     private GoogleMap mMap;
-
-
-
-    List<SiteInfo> siteInfoList =  new  ArrayList<>();
 
     double latitude;
     double longitude;
@@ -209,8 +205,11 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         // Add cluster items (markers) to the cluster manager.
 
         final CustomClusterRenderer renderer = new CustomClusterRenderer(this, mMap, mClusterManager);
-
         mClusterManager.setRenderer(renderer);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mClusterManager.setAlgorithm(new NonHierarchicalViewBasedAlgorithm<MyItem>(metrics.widthPixels, metrics.heightPixels));
 
         addItems();
 
@@ -218,8 +217,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
         // manager.
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
-
-
     }
 
     private void addItems() {
@@ -231,7 +228,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 
         while (true) {
             try {
-                if (!((info = reader.readLine()) != null)) break;
+                if ((info = reader.readLine()) == null) break;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -243,12 +240,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
             number = String.valueOf(line[1]);
             prob = String.valueOf(line[6]);
 
-            siteInfoList.add(new SiteInfo(number, tarrif, latitude, longitude, hours, prob));
+            SiteInfo p = new SiteInfo(number, tarrif, latitude, longitude, hours, prob);
 
-        }
-
-        for (SiteInfo p : siteInfoList) {
-            MyItem parkingSpot = new MyItem(p.latitude, p.longitude, p.number, p.tarrif + p.hours+"\nProbability of Availability: " + p.prob + "%");
+            MyItem parkingSpot = new MyItem(p.latitude, p.longitude, p.number, p.tarrif + p.hours+"\nProbability of Availability: " + p.prob + "%", p.prob);
             mClusterManager.addItem(parkingSpot);
         }
     }
